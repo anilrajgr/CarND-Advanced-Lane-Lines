@@ -1,23 +1,9 @@
-# SUPER DEBUG: 
-# SUPER DEBUG: # coding: utf-8
-# SUPER DEBUG: 
-# SUPER DEBUG: # In[1]:
-# SUPER DEBUG: 
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import glob
-# SUPER DEBUG: 
-# SUPER DEBUG: 
-# SUPER DEBUG: # In[2]:
-# SUPER DEBUG: 
 images = glob.glob('camera_cal\calibration*.jpg')
-# SUPER DEBUG: 
-# SUPER DEBUG: 
-# SUPER DEBUG: # In[3]:
-# SUPER DEBUG: 
-# SUPER DEBUG: # Arrays to store object points and image points from all the images
 objpoints = [] # 3D points in real world space
 imgpoints = [] # 2D points in image plane
 
@@ -57,27 +43,6 @@ for fname in images:
 # In[6]:
 
 ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
-# SUPER DEBUG: 
-# SUPER DEBUG: 
-# SUPER DEBUG: # In[7]:
-# SUPER DEBUG: 
-# SUPER DEBUG: """
-# SUPER DEBUG: for fname in images:
-# SUPER DEBUG:     img = mpimg.imread(fname)
-# SUPER DEBUG:     
-# SUPER DEBUG:     undist = cv2.undistort(img, mtx, dist, None, mtx)
-# SUPER DEBUG:     f, (ax1, ax2) = plt.subplots(1, 2, figsize=(24,9))
-# SUPER DEBUG:     f.tight_layout()
-# SUPER DEBUG:     ax1.imshow(img)
-# SUPER DEBUG:     ax1.set_title('Original Image', fontsize=50)
-# SUPER DEBUG:     ax2.imshow(undist)
-# SUPER DEBUG:     ax2.set_title('Undistorted Image', fontsize=50)
-# SUPER DEBUG:     plt.subplots_adjust(left=0, right=1, top=0.9, bottom=0)
-# SUPER DEBUG:     # plt.show()
-# SUPER DEBUG: """
-# SUPER DEBUG: 
-# SUPER DEBUG: 
-# SUPER DEBUG: # In[8]:
 
 def abs_sobel_thresh(img_ch, orient='x', thresh_min=0, thresh_max=255):
     # Apply x or y gradient with the OpenCV Sobel() function
@@ -130,102 +95,6 @@ def abs_select(img_ch, thresh=(0, 255)):
     binary_output = np.zeros_like(img_ch)
     binary_output[(img_ch > thresh[0]) & (img_ch <= thresh[1])] = 1
     return binary_output
-# SUPER DEBUG: 
-# SUPER DEBUG: 
-# SUPER DEBUG: # In[9]:
-# SUPER DEBUG: 
-# SUPER DEBUG: ksize = 3
-# SUPER DEBUG: images = glob.glob('test_images\*.jpg')
-# SUPER DEBUG: for fname in images:
-# SUPER DEBUG:     img = mpimg.imread(fname)
-# SUPER DEBUG:     gradx = abs_sobel_thresh(img[:,:,2], orient='x', thresh_min=20, thresh_max=100)
-# SUPER DEBUG:     mag_binary = mag_thresh(cv2.cvtColor(img, cv2.COLOR_RGB2GRAY), sobel_kernel=ksize, thresh=(30,100))
-# SUPER DEBUG:     dir_binary = dir_threshold(cv2.cvtColor(img, cv2.COLOR_RGB2GRAY), sobel_kernel=15, thresh=(0.43, 0.86))
-# SUPER DEBUG:     hls_h_binary = abs_select(cv2.cvtColor(img, cv2.COLOR_RGB2HLS)[:,:,0], thresh=(150, 255))
-# SUPER DEBUG:     hls_l_binary = abs_select(cv2.cvtColor(img, cv2.COLOR_RGB2HLS)[:,:,1], thresh=(150, 255))
-# SUPER DEBUG:     hls_s_binary = abs_select(cv2.cvtColor(img, cv2.COLOR_RGB2HLS)[:,:,2], thresh=(80, 255))
-# SUPER DEBUG:     hls_s_gradx = abs_sobel_thresh(cv2.cvtColor(img,cv2.COLOR_RGB2HLS)[:,:,2], orient='x', thresh_min=40, thresh_max=100)
-# SUPER DEBUG:     
-# SUPER DEBUG:     combined = np.zeros_like(dir_binary)
-# SUPER DEBUG:     combined[(hls_s_binary == 1) & ((mag_binary == 1) & (dir_binary == 1))] = 1
-# SUPER DEBUG:     
-# SUPER DEBUG:     
-# SUPER DEBUG:     ##----------------
-# SUPER DEBUG: 
-# SUPER DEBUG:     ksize = 3 # Choose a larger odd number to smooth gradient measurements
-# SUPER DEBUG:     gradx = abs_sobel_thresh(cv2.cvtColor(img, cv2.COLOR_RGB2GRAY), orient='x', thresh_min=20, thresh_max=150)
-# SUPER DEBUG:     grady = abs_sobel_thresh(cv2.cvtColor(img, cv2.COLOR_RGB2GRAY), orient='y', thresh_min=20, thresh_max=255)
-# SUPER DEBUG:     mag_binary = mag_thresh(cv2.cvtColor(img, cv2.COLOR_RGB2GRAY), sobel_kernel=7, thresh=(50,200))
-# SUPER DEBUG:     dir_binary = dir_threshold(cv2.cvtColor(img, cv2.COLOR_RGB2GRAY), sobel_kernel=15, thresh=(0.6, 1.3))
-# SUPER DEBUG:     combined_gradient = np.zeros_like(dir_binary)
-# SUPER DEBUG:     combined_gradient[((gradx == 1) & (grady == 1)) | ((dir_binary == 1) & (mag_binary == 1))] = 1
-# SUPER DEBUG:     ##----------------
-# SUPER DEBUG:     
-# SUPER DEBUG:     
-# SUPER DEBUG:     # color_binary = np.dstack((np.zeros_like(gradx), gradx, hls_s_binary))
-# SUPER DEBUG:     combined = np.zeros_like(gradx)
-# SUPER DEBUG:     combined[(hls_s_binary == 1) | (combined_gradient == 1)] = 1
-# SUPER DEBUG:     
-# SUPER DEBUG:     """
-# SUPER DEBUG:     # Plot the result
-# SUPER DEBUG:     f, (ax0, ax1, ax2) = plt.subplots(3, 3, figsize=(12,9))
-# SUPER DEBUG:     # f.tight_layout()
-# SUPER DEBUG:     ax0[0].imshow(img)
-# SUPER DEBUG:     ax0[0].set_title('Original Image', fontsize=20)
-# SUPER DEBUG:     ax0[1].imshow(gradx, cmap='gray')
-# SUPER DEBUG:     ax0[1].set_title('Threshold Gradient', fontsize=20)
-# SUPER DEBUG:     ax0[2].imshow(mag_binary, cmap='gray')
-# SUPER DEBUG:     ax0[2].set_title('Magnitude Gradient', fontsize=20)
-# SUPER DEBUG:     ax1[0].imshow(dir_binary, cmap='gray')
-# SUPER DEBUG:     ax1[0].set_title('Direction Gradient', fontsize=20)
-# SUPER DEBUG:     ax1[1].imshow(combined, cmap='gray')
-# SUPER DEBUG:     ax1[1].set_title('Combined', fontsize=20)
-# SUPER DEBUG:     ax1[2].imshow(hls_h_binary, cmap='gray')
-# SUPER DEBUG:     ax1[2].set_title('HLS-H', fontsize=20)
-# SUPER DEBUG:     ax2[0].imshow(hls_l_binary, cmap='gray')
-# SUPER DEBUG:     ax2[0].set_title('HLS-L', fontsize=20)
-# SUPER DEBUG:     ax2[1].imshow(hls_s_binary, cmap='gray')
-# SUPER DEBUG:     ax2[1].set_title('HLS-S', fontsize=20)
-# SUPER DEBUG:     ax2[2].imshow(hls_s_gradx, cmap='gray')
-# SUPER DEBUG:     ax2[2].set_title('HLS-S-Gradient', fontsize=20)
-# SUPER DEBUG:     plt.subplots_adjust(left=0, right=1, top=0.9, bottom=0)
-# SUPER DEBUG:     """
-# SUPER DEBUG: 
-# SUPER DEBUG: 
-# SUPER DEBUG: # In[10]:
-# SUPER DEBUG: 
-# SUPER DEBUG: # Perspective Transform
-# SUPER DEBUG: fname = 'test_images\straight_lines1.jpg'
-# SUPER DEBUG: img = mpimg.imread(fname)
-# SUPER DEBUG: # plt.imshow(img)
-# SUPER DEBUG: # plt.show()
-# SUPER DEBUG: 
-# SUPER DEBUG: def region_of_interest(img, vertices):
-# SUPER DEBUG:     return img
-# SUPER DEBUG:     """
-# SUPER DEBUG:     Applies an image mask.
-# SUPER DEBUG:     
-# SUPER DEBUG:     Only keeps the region of the image defined by the polygon
-# SUPER DEBUG:     formed from `vertices`. The rest of the image is set to black.
-# SUPER DEBUG:     """
-# SUPER DEBUG:     #defining a blank mask to start with
-# SUPER DEBUG:     mask = np.zeros_like(img)   
-# SUPER DEBUG:     
-# SUPER DEBUG:     #defining a 3 channel or 1 channel color to fill the mask with depending on the input image
-# SUPER DEBUG:     if len(img.shape) > 2:
-# SUPER DEBUG:         channel_count = img.shape[2]  # i.e. 3 or 4 depending on your image
-# SUPER DEBUG:         ignore_mask_color = (255,) * channel_count
-# SUPER DEBUG:     else:
-# SUPER DEBUG:         ignore_mask_color = 255
-# SUPER DEBUG:         
-# SUPER DEBUG:     #filling pixels inside the polygon defined by "vertices" with the fill color    
-# SUPER DEBUG:     cv2.fillPoly(mask, vertices, ignore_mask_color)
-# SUPER DEBUG:     
-# SUPER DEBUG:     #returning the image only where mask pixels are nonzero
-# SUPER DEBUG:     masked_image = cv2.bitwise_and(img, mask)
-# SUPER DEBUG:     return masked_image
-# SUPER DEBUG: 
-# SUPER DEBUG: 
 def compute_perspective_xform():
     img = mpimg.imread(fname)
     img_size = (img.shape[1], img.shape[0])
@@ -268,59 +137,12 @@ def compute_perspective_xform():
     
     return M, Minv
 
-# SUPER DEBUG: def find_window_centroids(image, window_width, window_height, margin):
-# SUPER DEBUG:     
-# SUPER DEBUG:     window_centroids = [] # Store the (left,right) window centroid positions per level
-# SUPER DEBUG:     window = np.ones(window_width) # Create our window template that we will use for convolutions
-# SUPER DEBUG:     
-# SUPER DEBUG:     # First find the two starting positions for the left and right lane by using np.sum to get the vertical image slice
-# SUPER DEBUG:     # and then np.convolve the vertical image slice with the window template 
-# SUPER DEBUG:     
-# SUPER DEBUG:     # Sum quarter bottom of image to get slice, could use a different ratio
-# SUPER DEBUG:     l_sum = np.sum(warped[int(3*warped.shape[0]/4):,:int(warped.shape[1]/2)], axis=0)
-# SUPER DEBUG:     l_center = np.argmax(np.convolve(window,l_sum))-window_width/2
-# SUPER DEBUG:     r_sum = np.sum(warped[int(3*warped.shape[0]/4):,int(warped.shape[1]/2):], axis=0)
-# SUPER DEBUG:     r_center = np.argmax(np.convolve(window,r_sum))-window_width/2+int(warped.shape[1]/2)
-# SUPER DEBUG:     
-# SUPER DEBUG:     # Add what we found for the first layer
-# SUPER DEBUG:     window_centroids.append((l_center,r_center))
-# SUPER DEBUG:     
-# SUPER DEBUG:     # Go through each layer looking for max pixel locations
-# SUPER DEBUG:     for level in range(1,(int)(warped.shape[0]/window_height)):
-# SUPER DEBUG:         # convolve the window into the vertical slice of the image
-# SUPER DEBUG:         image_layer = np.sum(warped[int(warped.shape[0]-(level+1)*window_height):int(warped.shape[0]-level*window_height),:], axis=0)
-# SUPER DEBUG:         conv_signal = np.convolve(window, image_layer)
-# SUPER DEBUG:         # Find the best left centroid by using past left center as a reference
-# SUPER DEBUG:         # Use window_width/2 as offset because convolution signal reference is at right side of window, not center of window
-# SUPER DEBUG:         offset = window_width/2
-# SUPER DEBUG:         l_min_index = int(max(l_center+offset-margin,0))
-# SUPER DEBUG:         l_max_index = int(min(l_center+offset+margin,warped.shape[1]))
-# SUPER DEBUG:         l_center = np.argmax(conv_signal[l_min_index:l_max_index])+l_min_index-offset
-# SUPER DEBUG:         # Find the best right centroid by using past right center as a reference
-# SUPER DEBUG:         r_min_index = int(max(r_center+offset-margin,0))
-# SUPER DEBUG:         r_max_index = int(min(r_center+offset+margin,warped.shape[1]))
-# SUPER DEBUG:         r_center = np.argmax(conv_signal[r_min_index:r_max_index])+r_min_index-offset
-# SUPER DEBUG:         # Add what we found for that layer
-# SUPER DEBUG:         window_centroids.append((l_center,r_center))
-# SUPER DEBUG: 
-# SUPER DEBUG:     return window_centroids
-# SUPER DEBUG: 
-# SUPER DEBUG: def window_mask(width, height, img_ref, center,level):
-# SUPER DEBUG:     output = np.zeros_like(img_ref)
-# SUPER DEBUG:     output[int(img_ref.shape[0]-(level+1)*height):int(img_ref.shape[0]-level*height),max(0,int(center-width/2)):min(int(center+width/2),img_ref.shape[1])] = 1
-# SUPER DEBUG:     return output
-# SUPER DEBUG: 
 def warp(img, M):
     img_size = (img.shape[1], img.shape[0])
     warped = cv2.warpPerspective(img, M, img_size, flags=cv2.INTER_LINEAR)
     return warped
 
 M, Minv = compute_perspective_xform()
-# SUPER DEBUG: 
-# SUPER DEBUG: 
-# SUPER DEBUG: # In[11]:
-# SUPER DEBUG: 
-# SUPER DEBUG: # Define a class to receive the characteristics of each line detection
 class Line():
     def __init__(self):
         # was the line detected in the last iteration?
@@ -345,28 +167,13 @@ class Line():
         self.ally = None
 
 
-# SUPER DEBUG: # In[12]:
-# SUPER DEBUG: 
 import copy
-# SUPER DEBUG: 
-# SUPER DEBUG: left_curverad_prev = 10000
-# SUPER DEBUG: right_curverad_prev = 10000
-# SUPER DEBUG: curverad_prec = 100
-# SUPER DEBUG: left_line_inst = Line()
-# SUPER DEBUG: right_line_inst = Line()
-# SUPER DEBUG: 
-# SUPER DEBUG: search_type = "full"
-# SUPER DEBUG: 
 def mark_lanes_experiment(img, left_line_inst, right_line_inst):
     global left_curverad_prev
     global right_curverad_prev
     
     undist_img = cv2.undistort(img, mtx, dist, None, mtx)
     
-# SUPER DEBUG:     imshape = undist_img.shape
-# SUPER DEBUG:     vertices = np.array([[(0,imshape[0]),(640, 320), (640, 320), (imshape[1],imshape[0])]], dtype=np.int32)
-# SUPER DEBUG:     masked_img = region_of_interest(undist_img, vertices)
-# SUPER DEBUG:     
     hls_s_binary = abs_select(cv2.cvtColor(undist_img, cv2.COLOR_RGB2HLS)[:,:,2], thresh=(80, 255))
     ksize = 3 # Choose a larger odd number to smooth gradient measurements
     gradx = abs_sobel_thresh(cv2.cvtColor(undist_img, cv2.COLOR_RGB2GRAY), orient='x', thresh_min=20, thresh_max=150)
@@ -379,7 +186,6 @@ def mark_lanes_experiment(img, left_line_inst, right_line_inst):
     combined[(hls_s_binary == 1) | (combined_gradient == 1)] = 1
     
     warped = warp(combined, M) # undist_img, M)
-# SUPER DEBUG:     warped_crop = warped[400:680, 0:1280]
     
     # Take a histogram of the image
     histogram = np.sum(warped[warped.shape[0]/2:,:], axis=0)
@@ -410,13 +216,6 @@ def mark_lanes_experiment(img, left_line_inst, right_line_inst):
     # Create empty lists to receive left and right lane pixel indices
     left_lane_inds = []
     right_lane_inds = []
-# SUPER DEBUG:     if left_line_inst.detected == True:
-# SUPER DEBUG:         search_type = "incremental"
-# SUPER DEBUG:         left_lane_inds = ((nonzerox > (left_line_inst.current_fit[0]*(nonzeroy**2) + left_line_inst.current_fit[1]*nonzeroy + left_line_inst.current_fit[2] - margin)) & (nonzerox < (left_line_inst.current_fit[0]*(nonzeroy**2) + left_line_inst.current_fit[1]*nonzeroy + left_line_inst.current_fit[2] + margin))) 
-# SUPER DEBUG:         right_lane_inds = ((nonzerox > (right_line_inst.current_fit[0]*(nonzeroy**2) + right_line_inst.current_fit[1]*nonzeroy + right_line_inst.current_fit[2] - margin)) & (nonzerox < (right_line_inst.current_fit[0]*(nonzeroy**2) + right_line_inst.current_fit[1]*nonzeroy + right_line_inst.current_fit[2] + margin))) 
-# SUPER DEBUG:     else:
-# SUPER DEBUG:         search_type = "full"
-# SUPER DEBUG:         # Step through the windows one by one
     for window in range(nwindows):
         # Identify window boundaries in x and y (and right and left)
         win_y_low = warped.shape[0] - (window+1)*window_height
@@ -465,10 +264,6 @@ def mark_lanes_experiment(img, left_line_inst, right_line_inst):
     
     # Measure the curvature
     y_eval = warped.shape[0]
-# SUPER DEBUG:     left_curverad = ((1 + (2*left_fit[0]*y_eval + left_fit[1])**2)**1.5) / np.absolute(2*left_fit[0])
-# SUPER DEBUG:     right_curverad = ((1 + (2*right_fit[0]*y_eval + right_fit[1])**2)**1.5) / np.absolute(2*right_fit[0])
-# SUPER DEBUG:     # print(left_curverad, right_curverad)
-# SUPER DEBUG:     
     # Define conversions in x and y from pixels space to meters
     ym_per_pix = 30/720 # meters per pixel in y dimension
     xm_per_pix = 3.7/700 # meters per pixel in x dimension
@@ -486,11 +281,6 @@ def mark_lanes_experiment(img, left_line_inst, right_line_inst):
     # Create an image to drw the lines on
     warp_zero = np.zeros_like(warped).astype(np.uint8)
     color_warp = np.dstack((warp_zero, warp_zero, warp_zero))
-# SUPER DEBUG:     #Recast the x and y points into usable format for cv2.fillPoly()
-# SUPER DEBUG: 
-# SUPER DEBUG:     # pts_left = np.array([np.transpose(np.vstack([left_fitx, ploty]))])
-# SUPER DEBUG:     # pts_right = np.array([np.flipud(np.transpose(np.vstack([right_fitx, ploty])))])
-# SUPER DEBUG:     # pts = np.hstack((pts_left, pts_right))
 
     pts_left = np.array([[left_fitx[y], y] for y in np.arange(720)])
     pts_right = np.array([[right_fitx[y], y] for y in np.arange(719,0,-1)])
@@ -501,36 +291,11 @@ def mark_lanes_experiment(img, left_line_inst, right_line_inst):
     cv2.fillPoly(color_warp, np.int_([pts]), (0, 255, 0))
     
     # Draw the line onto the warped blank image
-# SUPER DEBUG:     # cv2.fillPoly(color_warp, np.int_([pts]), (0, 255, 0))
-# SUPER DEBUG:     
     # warp the blank bak to original image space using inverse perspective matrix
     newwarp = cv2.warpPerspective(color_warp, Minv, (undist_img.shape[1], undist_img.shape[0]))
     
     # Combine the result with the original image
-# SUPER DEBUG:     if (abs(left_curverad - left_curverad_prev) > curverad_prec):
-# SUPER DEBUG:         radius_l = "Radius (L) = {:d} (m)".format(int(left_curverad))
-# SUPER DEBUG:     else:
-# SUPER DEBUG:         radius_l = "Radius (L) = {:d} (m)".format(int(left_curverad_prev))
-# SUPER DEBUG:         
-# SUPER DEBUG:     if (abs(right_curverad - right_curverad_prev) > curverad_prec):
-# SUPER DEBUG:         radius_r = "Radius (R) = {:d} (m)".format(int(right_curverad))
-# SUPER DEBUG:     else:
-# SUPER DEBUG:         radius_r = "Radius (R) = {:d} (m)".format(int(right_curverad_prev))
-# SUPER DEBUG:     
-# SUPER DEBUG:     cv2.putText(undist_img, radius_l, (100, 70), cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2 )
-# SUPER DEBUG:     cv2.putText(undist_img, radius_r, (100, 170), cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2 )
-# SUPER DEBUG:     cv2.putText(undist_img, search_type, (100, 270), cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2 )
     filled_img = cv2.addWeighted(undist_img, 1, newwarp, 0.3, 0)
-# SUPER DEBUG:     
-# SUPER DEBUG:     left_curverad_prev = left_curverad
-# SUPER DEBUG:     right_curverad_prev = right_curverad
-# SUPER DEBUG:     
-# SUPER DEBUG:     left_line_inst.detected = False
-# SUPER DEBUG:     left_line_inst.current_fit = left_fit
-# SUPER DEBUG:     
-# SUPER DEBUG:     right_line_inst.detected = False
-# SUPER DEBUG:     right_line_inst.current_fit = right_fit
-# SUPER DEBUG:     
     return filled_img
 
 left_lane_inst = Line()
@@ -541,36 +306,9 @@ def mark_lanes(img):
     global right_lane_inst
     filled_img = mark_lanes_experiment(img, left_lane_inst, right_lane_inst)
     return filled_img
-# SUPER DEBUG: 
-# SUPER DEBUG: 
-# SUPER DEBUG: # In[ ]:
-# SUPER DEBUG: 
-# SUPER DEBUG: images = glob.glob('test_images\*.jpg')
-# SUPER DEBUG: # images = glob.glob('test_images\*t2.jpg')
-# SUPER DEBUG: """
-# SUPER DEBUG: for fname in images:
-# SUPER DEBUG:     img = mpimg.imread(fname)
-# SUPER DEBUG:     filled_img = mark_lanes_experiment(img, left_line_inst, right_line_inst)
-# SUPER DEBUG:     
-# SUPER DEBUG:     f, (ax0, ax1, ax2) = plt.subplots(3, 3, figsize=(12,9))
-# SUPER DEBUG:     f.tight_layout()
-# SUPER DEBUG:     ax0[0].imshow(img)
-# SUPER DEBUG:     ax0[0].set_title(fname, fontsize=20)
-# SUPER DEBUG:     ax2[2].imshow(filled_img)
-# SUPER DEBUG:     ax2[2].set_title('filled_img', fontsize=20)
-# SUPER DEBUG:     plt.subplots_adjust(left=0, right=1, top=0.9, bottom=0)
-# SUPER DEBUG: """
-# SUPER DEBUG: 
-# SUPER DEBUG: 
-# SUPER DEBUG: # In[ ]:
-# SUPER DEBUG: 
 from moviepy.editor import VideoFileClip
 from IPython.display import HTML
 import inspect
-# SUPER DEBUG: 
-# SUPER DEBUG: left_line_inst.detected = False
-# SUPER DEBUG: right_line_inst.detected = False
-# SUPER DEBUG: 
 
 proj_out = 'proj_out.mp4'
 clip = VideoFileClip("project_video.mp4")
